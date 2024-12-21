@@ -11,17 +11,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Initialize Firebase Admin SDK
+// Initialize Firebase Admin SDK using environment variable
 const serviceAccount = require('./icpl-platform-firebase-adminsdk-g22n4-7601bf7da3.json'); // Use .env for the path
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  databaseURL: process.env.FIREBASE_DATABASE_URL, // Firebase database URL from .env
 });
 
 const db = admin.firestore();
 
+// Middleware
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000', // Client origin
+  methods: ['GET', 'POST'], // Allowed HTTP methods
 }));
 app.use(bodyParser.json());
 
@@ -71,6 +73,7 @@ app.post('/save', saveLimiter, validateInput, async (req, res) => {
   }
 });
 
+// Health Check Endpoint
 app.get('/', (req, res) => {
   res.send('Backend server is running!');
 });
